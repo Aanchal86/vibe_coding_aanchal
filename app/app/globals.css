@@ -294,3 +294,18 @@ select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+.submit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.form-message.success {
+  background: #dcefe6;
+  color: #176b4d;
+}
+
+.form-message.error {
+  background: #fde7e4;
+  color: #a43b2e;
+}

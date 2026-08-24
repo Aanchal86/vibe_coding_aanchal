@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import { addSubscription } from './actions';
 
 type BillingCycle = 'MONTHLY' | 'YEARLY';
 
@@ -21,12 +22,32 @@ const initialValues: FormValues = {
 export default function Home() {
   const [values, setValues] = useState<FormValues>(initialValues);
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage(
-      'The form is ready. Backend submission will be connected in the next milestone.',
-    );
+
+    setIsSubmitting(true);
+    setMessage('');
+    setIsSuccess(false);
+
+    try {
+      const result = await addSubscription(values);
+
+      setMessage(result.message);
+      setIsSuccess(result.success);
+
+      if (result.success) {
+        setValues(initialValues);
+      }
+    } catch (error) {
+      console.error('Submission failed:', error);
+      setMessage('Something went wrong. Please try again.');
+      setIsSuccess(false);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -85,10 +106,13 @@ export default function Home() {
           <form onSubmit={handleSubmit}>
             <label htmlFor="serviceName">
               Service name
+
               <input
                 id="serviceName"
                 name="serviceName"
                 type="text"
+                minLength={2}
+                maxLength={60}
                 placeholder="For example, Netflix"
                 value={values.serviceName}
                 onChange={(event) =>
@@ -97,6 +121,7 @@ export default function Home() {
                     serviceName: event.target.value,
                   })
                 }
+                disabled={isSubmitting}
                 required
               />
             </label>
@@ -104,6 +129,7 @@ export default function Home() {
             <div className="field-row">
               <label htmlFor="cost">
                 Cost
+
                 <div className="currency-input">
                   <span>₹</span>
 
@@ -121,6 +147,7 @@ export default function Home() {
                         cost: event.target.value,
                       })
                     }
+                    disabled={isSubmitting}
                     required
                   />
                 </div>
@@ -128,6 +155,7 @@ export default function Home() {
 
               <label htmlFor="billingCycle">
                 Billing cycle
+
                 <select
                   id="billingCycle"
                   name="billingCycle"
@@ -138,6 +166,7 @@ export default function Home() {
                       billingCycle: event.target.value as BillingCycle,
                     })
                   }
+                  disabled={isSubmitting}
                 >
                   <option value="MONTHLY">Monthly</option>
                   <option value="YEARLY">Yearly</option>
@@ -147,10 +176,12 @@ export default function Home() {
 
             <label htmlFor="nextRenewalDate">
               Next renewal date
+
               <input
                 id="nextRenewalDate"
                 name="nextRenewalDate"
                 type="date"
+                min="2026-08-24"
                 value={values.nextRenewalDate}
                 onChange={(event) =>
                   setValues({
@@ -158,17 +189,30 @@ export default function Home() {
                     nextRenewalDate: event.target.value,
                   })
                 }
+                disabled={isSubmitting}
                 required
               />
             </label>
 
-            <button className="submit-button" type="submit">
-              Add subscription
-              <span aria-hidden="true">→</span>
+            <button
+              className="submit-button"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? 'Saving subscription...'
+                : 'Add subscription'}
+
+              {!isSubmitting && <span aria-hidden="true">→</span>}
             </button>
 
             {message && (
-              <p className="form-message" role="status">
+              <p
+                className={`form-message ${
+                  isSuccess ? 'success' : 'error'
+                }`}
+                role={isSuccess ? 'status' : 'alert'}
+              >
                 {message}
               </p>
             )}
