@@ -6,7 +6,13 @@ import {
   type ExpenseDashboardData,
 } from './dashboard-actions';
 
-export default function ExpenseDashboard() {
+interface ExpenseDashboardProps {
+  refreshKey: number;
+}
+
+export default function ExpenseDashboard({
+  refreshKey,
+}: ExpenseDashboardProps) {
   const [dashboard, setDashboard] =
     useState<ExpenseDashboardData | null>(null);
 
@@ -15,6 +21,8 @@ export default function ExpenseDashboard() {
   useEffect(() => {
     async function loadDashboard() {
       try {
+        setError('');
+
         const result = await getExpenseDashboard();
         setDashboard(result);
       } catch (loadError) {
@@ -28,7 +36,7 @@ export default function ExpenseDashboard() {
     }
 
     void loadDashboard();
-  }, []);
+  }, [refreshKey]);
 
   if (error) {
     return (
@@ -60,8 +68,7 @@ export default function ExpenseDashboard() {
           </h2>
 
           <p>
-            Monthly and yearly equivalents are calculated by
-            the server.
+            Pause a subscription to see your potential savings.
           </p>
         </div>
       </div>

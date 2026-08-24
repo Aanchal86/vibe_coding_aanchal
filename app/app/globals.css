@@ -742,3 +742,88 @@ select:focus {
     font-size: 26px;
   }
 }
+
+.subscription-card {
+  transition:
+    opacity 180ms,
+    filter 180ms,
+    transform 180ms;
+}
+
+.subscription-card:hover {
+  transform: translateY(-2px);
+}
+
+.subscription-card.paused-card {
+  opacity: 0.55;
+  filter: grayscale(0.75);
+  background: #f0f2ef;
+}
+
+.subscription-card.paused-card:hover {
+  transform: none;
+}
+
+.subscription-status-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 18px;
+  padding-top: 17px;
+  border-top: 1px solid var(--border);
+}
+
+.subscription-status-control > div {
+  display: grid;
+  gap: 4px;
+}
+
+.subscription-status-control strong {
+  font-size: 12px;
+}
+
+.subscription-status-control span {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.status-toggle {
+  position: relative;
+  width: 44px;
+  height: 25px;
+  flex: 0 0 auto;
+  padding: 3px;
+  border: 0;
+  border-radius: 20px;
+  background: #bdc6c1;
+  cursor: pointer;
+  transition: background 180ms;
+}
+
+.status-toggle > span {
+  display: block;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 5px rgba(20, 40, 31, 0.2);
+  transition: transform 180ms;
+}
+
+.status-toggle.active {
+  background: var(--green);
+}
+
+.status-toggle.active > span {
+  transform: translateX(19px);
+}
+
+.status-toggle.paused > span {
+  transform: translateX(0);
+}
+
+.status-toggle:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
